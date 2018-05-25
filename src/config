@@ -1,0 +1,6 @@
+
+#Ωª≤Ê±‡“Î∆˜
+#COMPILER= arm-none-linux-gnueabi-
+COMPILER=arm-unknown-linux-gnu-
+#COMPILER=
+
