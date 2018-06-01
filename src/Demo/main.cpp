@@ -27,7 +27,7 @@ using namespace CORE;
 CData testInfo;
 int onReceiveInfo(int cbCmd, const char *pCallbackPara, char *pBuf, int iBufLen)
 {
-	printf("-----> onReceiveInfo(), cbCmd:%d, pCallbackPara:%s, pBuf:%p, iBufLen:%d\n", cbCmd, pCallbackPara, pBuf, iBufLen);
+	printf("\n-----> main() onReceiveInfo(), cbCmd:%d, pCallbackPara:%s, pBuf:%p, iBufLen:%d\n", cbCmd, pCallbackPara, pBuf, iBufLen);
 
 	if (cbCmd == 1)
 	{
@@ -77,12 +77,12 @@ int main(int argc, char **argv)
 	int i = 0;
 	while (1)
 	{
-		cout<<"\n---> please input cmd(open,close,report,at,status):";
+		cout<<"\n---> please input cmd(open/openudp,close,report,at,status):";
 		char tmp[100] = { 0 };
 		cin >> tmp;
 		CData cmd = tmp;
 
-		if (cmd == "open")
+		if (cmd == "open" || cmd == "openudp")
 		{
 #if !defined(CORE_OS_FAMILY_WINDOWS)
 //linux // /dev/ttyS0
@@ -95,14 +95,26 @@ int main(int argc, char **argv)
 			CData param = tmp;	
 			param = CData("COM") + param;
 #endif
-			if (0 == OneNetNBIOT_Init(param.c_str(), 9600))
+
+			if (cmd == "openudp")
 			{
-				OneNetNBIOT_RegisterOnReceiveCallback(onReceiveInfo);
+				if (0 == NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_UDP))
+				{
+					NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
+				}
+				NBIOT_SetUdpServerInfo("210.21.202.36", 18080);
+			}
+			else
+			{
+				if (0 == NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_ONENET))
+				{
+					NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
+				}
 			}
 		}
 		else if (cmd == "close")
 		{
-			OneNetNBIOT_UnInit();
+			NBIOT_UnInit();
 		}
 		else if (cmd == "report")
 		{
@@ -115,42 +127,45 @@ int main(int argc, char **argv)
 				if (param == "0")
 				{
 					CData reportInfo = "000--JUST FOR TEST";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+					//	CData reportInfo = "000";//just for test //udp 000
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "0-1")
 				{
 					CData reportInfo = "111--JUST FOR TEST";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "0-2")
 				{
 					CData reportInfo = "{\"FSUID\":\"44030143800001\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"0.0\"},{\"ID\":\"112001\",\"Data\":\"0.0\"},{\"ID\":\"125001\",\"Data\":\"33.6\"},{\"ID\":\"003001\",\"Data\":\"0\"},{\"ID\":\"002001\",\"Data\":\"0\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"53.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"54.2\"},{\"ID\":\"101001\",\"Data\":\"226.0\"},{\"ID\":\"005001\",\"Data\":\"0\"},{\"ID\":\"006001\",\"Data\":\"0\"},{\"ID\":\"004001\",\"Data\":\"0\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"1\"}]}]}";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "0-3")
 				{
 					CData reportInfo = "{\"FSUID\":\"44030143800001\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"1.0\"},{\"ID\":\"112001\",\"Data\":\"1.0\"},{\"ID\":\"125001\",\"Data\":\"22.6\"},{\"ID\":\"003001\",\"Data\":\"1\"},{\"ID\":\"002001\",\"Data\":\"1\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"43.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"44.2\"},{\"ID\":\"101001\",\"Data\":\"116.0\"},{\"ID\":\"005001\",\"Data\":\"1\"},{\"ID\":\"006001\",\"Data\":\"1\"},{\"ID\":\"004001\",\"Data\":\"1\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"0\"}]}]}";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "1")
 				{
-					CData reportInfo = "000--JUST FOR TEST";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5751, (void *)(reportInfo.c_str()));
+					CData reportInfo = "111--JUST FOR TEST";//just for test
+					//	CData reportInfo = "111";//just for test //udp 000
+
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "1-1")
 				{
 					CData reportInfo = "111--JUST FOR TEST";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5751, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "1-2")
 				{
 					CData reportInfo = "{\"FSUID\":\"44030143800002\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"0.0\"},{\"ID\":\"112001\",\"Data\":\"0.0\"},{\"ID\":\"125001\",\"Data\":\"33.6\"},{\"ID\":\"003001\",\"Data\":\"0\"},{\"ID\":\"002001\",\"Data\":\"0\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"53.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"54.2\"},{\"ID\":\"101001\",\"Data\":\"226.0\"},{\"ID\":\"005001\",\"Data\":\"0\"},{\"ID\":\"006001\",\"Data\":\"0\"},{\"ID\":\"004001\",\"Data\":\"0\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"1\"}]}]}";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5751, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "1-3")
 				{
 					CData reportInfo = "{\"FSUID\":\"44030143800002\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"1.0\"},{\"ID\":\"112001\",\"Data\":\"1.0\"},{\"ID\":\"125001\",\"Data\":\"22.6\"},{\"ID\":\"003001\",\"Data\":\"1\"},{\"ID\":\"002001\",\"Data\":\"1\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"43.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"44.2\"},{\"ID\":\"101001\",\"Data\":\"116.0\"},{\"ID\":\"005001\",\"Data\":\"1\"},{\"ID\":\"006001\",\"Data\":\"1\"},{\"ID\":\"004001\",\"Data\":\"1\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"0\"}]}]}";//just for test
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5751, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo(reportInfo.c_str());
 				}
 				else if (param == "999")
 				{
@@ -165,7 +180,7 @@ int main(int argc, char **argv)
 						CData tmpTime = getTimeString();
 						CData reportInfo1 = "{\"FSUID\":\"44030143800001\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"0.0\"},{\"ID\":\"112001\",\"Data\":\"0.0\"},{\"ID\":\"125001\",\"Data\":\"33.6\"},{\"ID\":\"003001\",\"Data\":\"0\"},{\"ID\":\"002001\",\"Data\":\"0\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"53.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"54.2\"},{\"ID\":\"004001\",\"Data\":\"0\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"1\"}]}]}";//just for test
 						CData reportInfo = CData(cnt) + CData(" ") +tmpTime + reportInfo1;
-						OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+						NBIOT_ReportInfo(reportInfo.c_str());
 
 						Thread::sleep(100);
 					}
@@ -191,15 +206,15 @@ int main(int argc, char **argv)
 					}
 					if (param == "000")
 					{
-						OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+						NBIOT_ReportInfo(reportInfo.c_str());
 					}
 					if (param == "111")
 					{
-						OneNetNBIOT_ReportInfoExt(3200, 0, 5751, (void *)(reportInfo.c_str()));
+						NBIOT_ReportInfo(reportInfo.c_str());
 					}
 					if (param == "222")
 					{
-						OneNetNBIOT_ReportInfoExt(3200, 0, 30001, (void *)(reportInfo.c_str()));
+						NBIOT_ReportInfoExt(3200, 0, 30001, (reportInfo.c_str()));
 					}
 				}
 				else if (param == "99")
@@ -208,7 +223,7 @@ int main(int argc, char **argv)
 					cout << "---> please input report info:";
 					cin >> tmp;
 					CData reportInfo = tmp;
-					OneNetNBIOT_ReportInfoExt(3200, 0, 5750, (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfo((reportInfo.c_str()));
 				}
 				else
 				{
@@ -217,7 +232,7 @@ int main(int argc, char **argv)
 					cout << "---> please input report info:";
 					cin >> tmp;
 					CData reportInfo = tmp;
-					OneNetNBIOT_ReportInfoExt(3200, 0, resourceId.convertInt(), (void *)(reportInfo.c_str()));
+					NBIOT_ReportInfoExt(3200, 0, resourceId.convertInt(), (reportInfo.c_str()));
 
 					break;
 				}
@@ -231,13 +246,13 @@ int main(int argc, char **argv)
 			CData param = tmp;
 			char tmpRspBuf[1024];
 			memset(tmpRspBuf, 0x00, sizeof(tmpRspBuf));
-			OneNetNBIOT_SendAtCmd(param.c_str(), tmpRspBuf, sizeof(tmpRspBuf));
+			NBIOT_SendAtCmd(param.c_str(), tmpRspBuf, sizeof(tmpRspBuf));
 			printf("---> main() OneNetNBIOT_SendAtCmd() Rsp:%s \n", tmpRspBuf);
 		}
 		else if (cmd == "status")
 		{
 			int status = 0;
-			OneNetNBIOT_QueryStatus(&status);
+			NBIOT_QueryStatus(&status);
 			printf("---> main() OneNetNBIOT_QueryStatus():%d \n", status);
 		}
 		else

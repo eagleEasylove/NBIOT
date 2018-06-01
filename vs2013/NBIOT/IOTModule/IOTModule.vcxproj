@@ -19,7 +19,9 @@
     <ClCompile Include="..\..\..\src\IOTModule\ExceptionBase.cpp" />
     <ClCompile Include="..\..\..\src\IOTModule\IOTModule.cpp" />
     <ClCompile Include="..\..\..\src\IOTModule\Mutex.cpp" />
-    <ClCompile Include="..\..\..\src\IOTModule\OnenetNBIOT.cpp" />
+    <ClCompile Include="..\..\..\src\IOTModule\NBIOT.cpp" />
+    <ClCompile Include="..\..\..\src\IOTModule\NBIOTOnenet.cpp" />
+    <ClCompile Include="..\..\..\src\IOTModule\NBIOTUdp.cpp" />
     <ClCompile Include="..\..\..\src\IOTModule\RefCountedObject.cpp" />
     <ClCompile Include="..\..\..\src\IOTModule\Runnable.cpp" />
     <ClCompile Include="..\..\..\src\IOTModule\SerialPortSession.cpp" />
@@ -36,8 +38,11 @@
     <ClInclude Include="..\..\..\src\IOTModule\Exception.h" />
     <ClInclude Include="..\..\..\src\IOTModule\ExceptionBase.h" />
     <ClInclude Include="..\..\..\src\IOTModule\IOTModule.h" />
+    <ClInclude Include="..\..\..\src\IOTModule\IOTModuleCommon.h" />
     <ClInclude Include="..\..\..\src\IOTModule\Mutex.h" />
-    <ClInclude Include="..\..\..\src\IOTModule\OnenetNBIOT.h" />
+    <ClInclude Include="..\..\..\src\IOTModule\NBIOT.h" />
+    <ClInclude Include="..\..\..\src\IOTModule\NBIOTOnenet.h" />
+    <ClInclude Include="..\..\..\src\IOTModule\NBIOTUdp.h" />
     <ClInclude Include="..\..\..\src\IOTModule\Platform.h" />
     <ClInclude Include="..\..\..\src\IOTModule\RefCountedObject.h" />
     <ClInclude Include="..\..\..\src\IOTModule\Runnable.h" />

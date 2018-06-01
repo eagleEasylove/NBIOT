@@ -12,8 +12,8 @@ public:
 	
 public:
 	
-	virtual void OnInput(char *data, int len);
-	virtual void handle_time(int time = 0);
+	virtual void OnInput(char *data, int len) = 0;
+	virtual void handle_time(int time = 0) = 0;
 
 };
 

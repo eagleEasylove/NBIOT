@@ -6,6 +6,7 @@
 #include "Runnable.h"
 #include "Types.h"
 #include "Thread.h"
+#include "IOTModuleCommon.h"
 
 #if defined(CORE_OS_FAMILY_WINDOWS)
 #include "OS/SerialPort_WIN32.h"
@@ -17,7 +18,7 @@ using CORE::Runnable;
 using CORE::Thread;
 using CORE::CSerialPort;
 
-#define MAX_SERIAL_RCV_BUF_LEN 1024
+//#define MAX_SERIAL_RCV_BUF_LEN 1024
 
 class  CSerialPortSession: public Runnable
 {

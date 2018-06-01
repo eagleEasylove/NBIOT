@@ -1,40 +1,58 @@
 //
 #include "IOTModule.h"
 #include "./SingletonHolder.h"
-CIOTModule &OneNetNBIOT_Module()
+#include "IOTModuleCommon.h"
+#include "NBIOTOnenet.h"
+#include "NBIOTUdp.h"
+
+CIOTModule &NBIOT_Module()
 {
 	return CIOTModule::GetSingleInstance();
 } 
 
-int OneNetNBIOT_Init(const char *pComName, int iComSpeed)
+int NBIOT_Init(const char *pComName, int iComSpeed, int iNbiotMode)
 {
-	return CIOTModule::GetSingleInstance().InitModule(pComName, iComSpeed);
+	return CIOTModule::GetSingleInstance().InitModule(pComName, iComSpeed, NBIOT_MODE_UDP);
 }
-int OneNetNBIOT_ReportInfo(char *pReportInfo)
+
+int NBIOT_ReportInfo(const char *pReportInfo)
 {
-	return CIOTModule::GetSingleInstance().ReportInfo(3200, 0, 5750, pReportInfo);
+	return CIOTModule::GetSingleInstance().ReportInfo(pReportInfo);
 }
-int OneNetNBIOT_ReportInfoExt(int objId, int instanceId, int resourceId, void *pReportInfo)
+
+int NBIOT_SetUdpServerInfo(const char* serverIp, int serverPort)
 {
-	return CIOTModule::GetSingleInstance().ReportInfo(objId, instanceId, resourceId, pReportInfo);
+	return CIOTModule::GetSingleInstance().SetUdpServerInfo(serverIp, serverPort);
 }
-int OneNetNBIOT_RegisterOnReceiveCallback(OnReceiveCallback cbFun)
+
+int NBIOT_ReportInfoExt(int objId, int instanceId, int resourceId, const char * pReportInfo)
+{
+	return CIOTModule::GetSingleInstance().ReportInfoExt(objId, instanceId, resourceId, pReportInfo);
+}
+
+int NBIOT_ReportInfoUdp(int socketId, const char *pReportInfo)
+{
+	return CIOTModule::GetSingleInstance().ReportInfoUdp(socketId, pReportInfo);
+}
+
+int NBIOT_RegisterOnReceiveCallback(OnReceiveCallback cbFun)
 {
 	return CIOTModule::GetSingleInstance().SetCbFun(cbFun);
 }
-int OneNetNBIOT_UnInit()
+
+int NBIOT_UnInit()
 {
 	return CIOTModule::GetSingleInstance().UnInitModule();
 }
 
-int OneNetNBIOT_SendAtCmd(const char *pAtCmd, char *pAtCmdRsp, int iAtCmdRspLen)
+int NBIOT_SendAtCmd(const char *pAtCmd, char *pAtCmdRsp, int iAtCmdRspLen)
 {
 	return CIOTModule::GetSingleInstance().SendAtCmd(pAtCmd, pAtCmdRsp, iAtCmdRspLen);
 }
 
 //ok:return 0;   error: return -1
 //status: see Query Status list
-int OneNetNBIOT_QueryStatus(int *pStatus)
+int NBIOT_QueryStatus(int *pStatus)
 {
 	int status = 0;
 	int iRet = CIOTModule::GetSingleInstance().QueryStatus(status);
@@ -44,39 +62,70 @@ int OneNetNBIOT_QueryStatus(int *pStatus)
 
 CIOTModule::CIOTModule(void)
 {
-
+	m_pNBIOT = NULL;
 }
 CIOTModule::~CIOTModule(void)
 {
-
+	if (m_pNBIOT)
+	{
+		delete m_pNBIOT;
+	}
+	m_pNBIOT = NULL;
 }
 
-int CIOTModule::InitModule(const char *pSerialName, int iComSpeed)
-{
-	int iRet = m_ConenetNBIOT.init(pSerialName, iComSpeed);
+int CIOTModule::InitModule(const char *pSerialName, int iComSpeed, int mode)
+{//not thread safe
+	if (!m_pNBIOT)
+	{
+		if (mode == NBIOT_MODE_UDP)
+		{//1:udp mode
+			m_pNBIOT = new CNBIOTUdp;
+		}
+		else
+		{//0:onenet mode
+			m_pNBIOT = new COnenetNBIOT;
+		}
+	}
+	
+	int iRet = m_pNBIOT->init(pSerialName, iComSpeed);
 	m_thread.start(*this);
 	return iRet;
 }
 int CIOTModule::UnInitModule()
 {
-	return m_ConenetNBIOT.unInit();
+	return m_pNBIOT->unInit();
 }
-int CIOTModule::ReportInfo(int objId, int instanceId, int resourceId, void *pReportInfo)
+
+int CIOTModule::ReportInfo(const char *pReportInfo)
 {
-	return m_ConenetNBIOT.reportInfo(objId, instanceId, resourceId, CData((char*)pReportInfo));
+	return m_pNBIOT->reportInfo(pReportInfo);
+}
+
+int CIOTModule::ReportInfoExt(int objId, int instanceId, int resourceId, const char *pReportInfo)
+{
+	return m_pNBIOT->reportInfoExt(objId, instanceId, resourceId, pReportInfo);
+}
+int CIOTModule::ReportInfoUdp(int socketId, const char *pReportInfo)
+{
+	return m_pNBIOT->reportInfoUdp(socketId, pReportInfo);
 }
 int CIOTModule::SetCbFun(OnReceiveCallback cbFun)
 {
-	return m_ConenetNBIOT.SetCbFun(cbFun);;
+	return m_pNBIOT->SetCbFun(cbFun);;
+}
+
+int CIOTModule::SetUdpServerInfo(CData serverIp, int serverPort)
+{
+	return m_pNBIOT->SetUdpServerInfo(serverIp, serverPort);
 }
 
 int CIOTModule::SendAtCmd(const char *pAtCmd, char *pAtCmdRsp, int iAtCmdRspLen)
 {
-	return m_ConenetNBIOT.SendAtCmd(pAtCmd, pAtCmdRsp, iAtCmdRspLen);
+	return m_pNBIOT->SendAtCmd(pAtCmd, pAtCmdRsp, iAtCmdRspLen);
 }
 int CIOTModule::QueryStatus(int &status)
 {
-	return m_ConenetNBIOT.QueryStatus(status);
+	return m_pNBIOT->QueryStatus(status);
 }
 
 CIOTModule& CIOTModule::GetSingleInstance()
@@ -89,7 +138,7 @@ void CIOTModule::run()
 {
 	while (1)
 	{
-		m_ConenetNBIOT.handle_time(1);
+		m_pNBIOT->handle_time(1);
 		Thread::sleep(1000);
 	}
 	return;

@@ -4,13 +4,31 @@
 
 #include "dllexport.h"
 
-//cmd: 1 read;  2: write;   3:execute;  4:....
+//cmd: 0:unkown; 1 read;  2: write;   3:execute;  4:....
 typedef int(*OnReceiveCallback)(int cbCmd, const char *pCallbackPara, char *pBuf, int iBufLen);
 
-extern "C" DLLEXPORT_API int OneNetNBIOT_Init(const char *pComName, int iComSpeed);
-extern "C" DLLEXPORT_API int OneNetNBIOT_RegisterOnReceiveCallback(OnReceiveCallback cbFun);
-extern "C" DLLEXPORT_API int OneNetNBIOT_ReportInfo(char *pReportInfo);
-extern "C" DLLEXPORT_API int OneNetNBIOT_UnInit();
+// 0:onenet; 1:udp;
+#define NBIOT_MODE_ONENET 0
+#define NBIOT_MODE_UDP 1
+
+extern "C" DLLEXPORT_API int NBIOT_Init(const char *pComName, int iComSpeed, int iNbiotMode);
+extern "C" DLLEXPORT_API int NBIOT_RegisterOnReceiveCallback(OnReceiveCallback cbFun);
+
+//only used in udp mode
+extern "C" DLLEXPORT_API int NBIOT_SetUdpServerInfo(const char *pServerIp, int iServerPort);
+
+extern "C" DLLEXPORT_API int NBIOT_ReportInfo(const char *pReportInfo);
+extern "C" DLLEXPORT_API int NBIOT_UnInit();
+//ok:return 0;
+//status: see Query Status list
+extern "C" DLLEXPORT_API int NBIOT_QueryStatus(int *pStatus);
+
+//just for test
+extern "C" DLLEXPORT_API int NBIOT_ReportInfoExt(int objId, int instanceId, int resourceId, const char *pReportInfo);
+extern "C" DLLEXPORT_API int NBIOT_ReportInfoUdp(int socketId, const char *pReportInfo);
+
+extern "C" DLLEXPORT_API int NBIOT_SendAtCmd(const char *pAtCmd, char *pAtCmdRsp, int iAtCmdRspLen);
+
 
 //Query Status list
 #define NBIOT_BOOTSTRAP_START 1
@@ -21,6 +39,7 @@ extern "C" DLLEXPORT_API int OneNetNBIOT_UnInit();
 #define NBIOT_REG_SUCCESS 6
 #define NBIOT_REG_FAILED 7
 #define NBIOT_REG_TIMEOUT 8
+#define NBIOT_REG_REGING 9
 
 #ifndef NBIOT_PREPARE_SUCCESS
 #define NBIOT_COM_UNINIT      -1
@@ -34,13 +53,7 @@ extern "C" DLLEXPORT_API int OneNetNBIOT_UnInit();
 #define NBIOT_PREPARE_SUCCESS 100
 #endif 
 
-//ok:return 0;
-//status: see Query Status list
-extern "C" DLLEXPORT_API int OneNetNBIOT_QueryStatus(int *pStatus);
 
-//just for test
-extern "C" DLLEXPORT_API int OneNetNBIOT_ReportInfoExt(int objId, int instanceId, int resourceId, void *pReportInfo);
-extern "C" DLLEXPORT_API int OneNetNBIOT_SendAtCmd(const char *pAtCmd, char *pAtCmdRsp, int iAtCmdRspLen);
 
 #endif 
 
