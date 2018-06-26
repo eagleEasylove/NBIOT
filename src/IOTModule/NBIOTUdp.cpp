@@ -8,7 +8,9 @@ CNBIOTUdp::CNBIOTUdp()
 
 CNBIOTUdp::~CNBIOTUdp()
 {
-
+	m_iRegTime = 0;
+	m_iLifeTime = 0;
+	m_socketId = -1;
 }
 
 int CNBIOTUdp::initNBIOTModule()
@@ -120,7 +122,7 @@ int CNBIOTUdp::initNBIOTModule()
 
 
 	//set parameter
-	RebootNBIOTModule();
+//	RebootNBIOTModule();
 
 	atCmd = CData("AT+CFUN=1") + STR_CR;
 	if (0 == sendCmdSynWaitRsp(atCmd, atCmdRsp, SERIALPORT_RCV_TIMEOUT))
@@ -262,6 +264,7 @@ int CNBIOTUdp::initNBIOTModule()
 		iRet = -1;
 	}
 
+//	Thread::sleep(3*1000); //just for test
 	iRet = getLocalAddr();
 	if (iRet == 0)
 	{
@@ -318,7 +321,7 @@ int CNBIOTUdp::unInitNBIOTModule()
 
 int CNBIOTUdp::reportInfo(CData strReportInfo)
 {
-	return reportInfo(0, strReportInfo);
+	return reportInfo(m_socketId, strReportInfo);
 }
 
 int CNBIOTUdp::reportInfo(int socketId, CData reportInfo)
@@ -332,8 +335,8 @@ int CNBIOTUdp::reportInfo(int socketId, CData reportInfo)
 	CData atCmd;
 	CData atCmdRsp;
 
-	CData remoteAddr = m_UdpInfo[m_socketId].remoteIpAddr; //"210.21.202.36";
-	int   remotePort = m_UdpInfo[m_socketId].remotePort;// 18080;
+	CData remoteAddr = m_UdpInfo[socketId].remoteIpAddr; //"210.21.202.36";
+	int   remotePort = m_UdpInfo[socketId].remotePort;// 18080;
 
 	m_ATParser.notify(atCmd, socketId, remoteAddr, remotePort, reportInfo);
 	if (0 == sendCmdSynWaitRsp(atCmd, atCmdRsp, SERIALPORT_RCV_TIMEOUT))
@@ -372,6 +375,11 @@ void CNBIOTUdp::OnInput(char *data, int len)
 			else
 			{//REBOOT_CAUSE_APPLICATION_AT
 				printf("--->CNBIOTUdp::OnInput() atcmd resetModule \n");
+				if (m_iRegStatus == NBIOT_PREPARE_SUCCESS)
+				//if (m_iRegStatus != NBIOT_COM_OPEN_SUCCESS)
+				{
+					m_iNeedReset = 1;//need
+				}
 			}
 		}
 		else
@@ -556,6 +564,7 @@ void CNBIOTUdp::handle_time(int time)
 		m_iLifeTime = 0;
 		m_iRegTime = 0;
 
+		//initNBIOTModule() include RebootNBIOTModule()
 		RebootNBIOTModule();
 
 		int iRet = initNBIOTModule();
@@ -861,8 +870,10 @@ int CLierdaUDPATParser::doNotifyRsp(CData atCmdRsp)
 	{
 		CData atName = "ERROR";
 		int iSplitPosStart = atCmdRsp.find(atName) + atName.length();
+	//	CData strErrNo = atCmdRsp.substring(atCmdRsp.find(":") + 1, atCmdRsp.find(STR_CRLF, iSplitPosStart));
+	//	int iErrNo = strErrNo.substring(strErrNo.find_first_not_of(" ")).convertInt();
 		int iErrNo = atCmdRsp.substring(atCmdRsp.find(":") + 1, atCmdRsp.find(STR_CRLF, iSplitPosStart)).convertInt();
-		printf("--->CLierdaUDPATParser::doNotifyRsp() Error, iErrNo:!", iErrNo);
+		printf("--->CLierdaUDPATParser::doNotifyRsp() Error, iErrNo:%d!\n", iErrNo);
 
 		return -1;
 	}

@@ -20,7 +20,7 @@ using namespace CORE;
 #else
 #include <windows.h>  
 #endif
- 
+
 #define NBIOT_TEST
 #ifdef NBIOT_TEST
 
@@ -98,18 +98,16 @@ int main(int argc, char **argv)
 
 			if (cmd == "openudp")
 			{
-				if (0 == NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_UDP))
-				{
-					NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
-				}
-				NBIOT_SetUdpServerInfo("210.21.202.36", 18080);
+				NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_UDP);
+				NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
+
+			//	NBIOT_SetUdpServerInfo("210.21.202.36", 18080); //me
+				NBIOT_SetUdpServerInfo("210.21.202.40", 8080);
 			}
 			else
 			{
-				if (0 == NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_ONENET))
-				{
-					NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
-				}
+				NBIOT_Init(param.c_str(), 9600, NBIOT_MODE_ONENET);
+				NBIOT_RegisterOnReceiveCallback(onReceiveInfo);
 			}
 		}
 		else if (cmd == "close")
@@ -179,10 +177,13 @@ int main(int argc, char **argv)
 					{
 						CData tmpTime = getTimeString();
 						CData reportInfo1 = "{\"FSUID\":\"44030143800001\",\"Site\":[{\"DevID\":\"0600001\",\"Meter\":[{\"ID\":\"115001\",\"Data\":\"0.0\"},{\"ID\":\"112001\",\"Data\":\"0.0\"},{\"ID\":\"125001\",\"Data\":\"33.6\"},{\"ID\":\"003001\",\"Data\":\"0\"},{\"ID\":\"002001\",\"Data\":\"0\"}]},{\"DevID\":\"0700001\",\"Meter\":[{\"ID\":\"102001\",\"Data\":\"53.2\"}]},{\"DevID\":\"4400001\",\"Meter\":[{\"ID\":\"105001\",\"Data\":\"54.2\"},{\"ID\":\"004001\",\"Data\":\"0\"}]},{\"DevID\":\"1700001\",\"Meter\":[{\"ID\":\"005001\",\"Data\":\"1\"}]}]}";//just for test
-						CData reportInfo = CData(cnt) + CData(" ") +tmpTime + reportInfo1;
+						CData reportInfo = CData(cnt) + CData(" ") +tmpTime;
+
+						printf("---> reportInfo: %s\d", reportInfo.c_str());
+						reportInfo += reportInfo1;
 						NBIOT_ReportInfo(reportInfo.c_str());
 
-						Thread::sleep(100);
+						Thread::sleep(5*1000);
 					}
 				}
 				else if (param == "000" || param == "111" || param == "222" || param == "333")

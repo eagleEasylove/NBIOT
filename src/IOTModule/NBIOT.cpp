@@ -38,7 +38,7 @@ int CNBIOT::init(const char *pSerialName, int iComSpeed)
 		if (iRet == -1)
 		{//error
 			printf("--->COnenetNBIOT::init() initNBIOTModule() Error! \n");
-			m_iNeedReset = 1;
+		//	m_iNeedReset = 1;
 		}
 	}
 
@@ -182,7 +182,7 @@ int CNBIOT::RebootNBIOTModule()
 	CData atCmd = CData("AT+NRB") + STR_CR;
 	sendCmdNoWaitRsp(atCmd);
 
-	Thread::sleep(10 * 1000);//just for test
+	Thread::sleep(8 * 1000);//just for test
 
 	return iRet;
 }
