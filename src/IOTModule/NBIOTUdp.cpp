@@ -522,8 +522,15 @@ void CNBIOTUdp::handle_time(int time)
 		}
 		else if (m_iRegStatus == NBIOT_REG_SUCCESS && m_UdpInfo.size() > 0)
 		{
-			printf("--->CNBIOTUdp::handle_time() NBIOT_PREPARE_SUCCESS\n");
-			m_iRegStatus = NBIOT_PREPARE_SUCCESS;
+			if (0 == CreateUdpSocket())
+			{
+				m_iRegStatus = NBIOT_PREPARE_SUCCESS;
+				printf("--->CNBIOTUdp::handle_time() NBIOT_PREPARE_SUCCESS\n");
+			}
+			else
+			{
+				printf("--->CNBIOTUdp::handle_time() CreateUdpSocket() Error\n");
+			}
 		}
 	}
 
@@ -606,23 +613,30 @@ int CNBIOTUdp::SetUdpServerInfo(CData serverIp, int serverPort)
 		return -1;
 	}
 
-	int udpLocalPort = serverPort;//just for test
+	int udpLocalPort = serverPort;//TODO: just for test
+	int socketId = 0;
+
+	T_UdpInfo tmpUdpInfo;
+	tmpUdpInfo.socketId = socketId;
+	tmpUdpInfo.localPort = udpLocalPort;
+
+	tmpUdpInfo.remoteIpAddr = serverIp;
+	tmpUdpInfo.remotePort = serverPort;
+
+	m_UdpInfo[socketId] = tmpUdpInfo;
+	return 0;
+}
+
+int CNBIOTUdp::CreateUdpSocket()
+{
+	T_UdpInfo tmpUdpInfo = m_UdpInfo[0];//TODO: just for test
 	int socketId = -1;
 
-	int iRet = CreateUdpSocket(udpLocalPort, socketId);
-
+	int iRet = CreateUdpSocket(tmpUdpInfo.localPort, socketId);
 	if (iRet >= 0)
 	{
-		m_socketId = socketId;//just for test
-
-		T_UdpInfo tmpUdpInfo;
-		tmpUdpInfo.socketId = socketId;
-		tmpUdpInfo.localPort = udpLocalPort;
-
-		tmpUdpInfo.remoteIpAddr = serverIp;
-		tmpUdpInfo.remotePort = serverPort;
-
-		m_UdpInfo[socketId] = tmpUdpInfo;
+		m_socketId = socketId;//TODO: just for test
+		m_UdpInfo[0].socketId = m_socketId;//TODO: just for test
 
 		if (m_iRegStatus == NBIOT_REG_SUCCESS)
 		{
@@ -630,10 +644,15 @@ int CNBIOTUdp::SetUdpServerInfo(CData serverIp, int serverPort)
 		}
 		else
 		{
-			printf("--->CNBIOTUdp::SetUdpServerInfo() NBIOT_PREPARE_SUCCESS Error! \n");
+			printf("--->CNBIOTUdp::CreateUdpSocket() NBIOT_PREPARE_SUCCESS Error! \n");
+			return -1;
 		}
 	}
-
+	else
+	{
+		printf("--->CNBIOTUdp::CreateUdpSocket() Error! \n");
+		return -1;
+	}
 	return 0;
 }
 

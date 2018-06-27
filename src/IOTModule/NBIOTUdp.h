@@ -85,9 +85,6 @@ public:
 
 	virtual int SetUdpServerInfo(CData serverIp, int serverPort);//
 
-	int CreateUdpSocket(int localPort, int &socketId);
-	int CloseUdpSocket(int socketId);
-
 	int RecreateSocket();
 	int CloseSockets();
 
@@ -98,6 +95,9 @@ private:
 
 	int getLocalAddr();
 
+	int CreateUdpSocket();
+	int CreateUdpSocket(int localPort, int &socketId);
+	int CloseUdpSocket(int socketId);
 
 private:
 	int m_iLifeTime;
