@@ -586,6 +586,10 @@ void CNBIOTUdp::handle_time(int time)
 		m_iNeedReset = 0;
 	}
 
+	if (m_iRegStatus == NBIOT_PREPARE_SUCCESS)
+	{
+//		queryMessagesSentStatus();
+	}
 	return;
 }
 
@@ -605,6 +609,33 @@ int CNBIOTUdp::heartBeat()
 
 	return iRet;
 }
+
+
+int CNBIOTUdp::queryMessagesSentStatus()
+{
+	int iRet = 0;
+	//send: AT+NQMGS
+	//rsp: PENDING=1,SENT=34,ERROR = 0
+	//	   OK
+	//	CData atCmd;
+	CData atCmd = CData("AT+NQMGS") + STR_CR;
+	CData atCmdRsp;
+
+	//Hisi Query Messages Sent (+NQMGS)
+	if (0 == sendCmdSynWaitRsp(atCmd, atCmdRsp, SERIALPORT_RCV_TIMEOUT))
+	{
+
+		printf("--->CNBIOTUdp::queryMessagesSentStatus():%s", atCmdRsp.c_str());
+	}
+	else
+	{
+		printf("--->CNBIOTUdp::queryMessagesSentStatus() sendCmdSynWaitRsp() Error! AT+NQMGS\n");
+		iRet = -1;
+	}
+
+	return iRet;
+}
+
 
 int CNBIOTUdp::SetUdpServerInfo(CData serverIp, int serverPort)
 {

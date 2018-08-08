@@ -1,6 +1,9 @@
-﻿Build started 2018/6/27 16:35:43.
+﻿Build started 2018/7/30 14:55:08.
      1>Project "E:\00 Develop\04 IOT-onenet\03 src\NBIOT\vs2013\NBIOT\IOTModule\IOTModule.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D COMMONMODULE_EXPORTS /D WIN32 /D DLL_EXPORTS /D _MBCS /D _WINDLL /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\..\src\IOTModule\NBIOTUdp.cpp
+         NBIOTUdp.cpp
+       Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\00 Develop\04 IOT-onenet\03 src\NBIOT\vs2013\NBIOT\Debug\IOTModule.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\00 Develop\04 IOT-onenet\03 src\NBIOT\vs2013\NBIOT\Debug\IOTModule.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\00 Develop\04 IOT-onenet\03 src\NBIOT\vs2013\NBIOT\Debug\IOTModule.lib" /MACHINE:X86 /DLL Debug\AsynSessionObserver.obj
          Debug\Data.obj
          Debug\ErrorHandler.obj
@@ -21,4 +24,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.27
+Time Elapsed 00:00:03.30

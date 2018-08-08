@@ -93,7 +93,14 @@ int main(int argc, char **argv)
 			cout << "\n---> please input open param:";
 			cin >> tmp;
 			CData param = tmp;	
-			param = CData("COM") + param;
+			if (param.convertInt() >= 10)
+			{
+				param = CData("\\\\.\\COM") + param;
+			}
+			else
+			{
+				param = CData("COM") + param;
+			}
 #endif
 
 			if (cmd == "openudp")

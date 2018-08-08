@@ -92,6 +92,7 @@ private:
 	int reportInfo(int socketId, CData reportInfo);
 
 	int heartBeat();
+	int queryMessagesSentStatus();
 
 	int getLocalAddr();
 

@@ -1,4 +1,4 @@
-﻿Build started 2018/6/27 16:39:03.
+﻿Build started 2018/8/1 14:38:21.
      1>Project "E:\00 Develop\04 IOT-onenet\03 src\NBIOT\vs2013\NBIOT\NBIOT\NBIOT.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\..\src\Demo\main.cpp
@@ -12,4 +12,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.43
+Time Elapsed 00:00:03.92
